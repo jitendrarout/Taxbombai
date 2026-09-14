@@ -1,0 +1,162 @@
+[
+  {
+    "startingAge": 55,
+    "startingBalance": 250000,
+    "peakRmdAge": 84,
+    "peakRmdAmount": 50801,
+    "peakMarginalRate": 0.22,
+    "lifetimeTax": 231189
+  },
+  {
+    "startingAge": 55,
+    "startingBalance": 500000,
+    "peakRmdAge": 84,
+    "peakRmdAmount": 101603,
+    "peakMarginalRate": 0.24,
+    "lifetimeTax": 338137
+  },
+  {
+    "startingAge": 55,
+    "startingBalance": 1000000,
+    "peakRmdAge": 84,
+    "peakRmdAmount": 203206,
+    "peakMarginalRate": 0.32,
+    "lifetimeTax": 575562
+  },
+  {
+    "startingAge": 55,
+    "startingBalance": 2000000,
+    "peakRmdAge": 84,
+    "peakRmdAmount": 406411,
+    "peakMarginalRate": 0.35,
+    "lifetimeTax": 1202164
+  },
+  {
+    "startingAge": 55,
+    "startingBalance": 4000000,
+    "peakRmdAge": 84,
+    "peakRmdAmount": 812822,
+    "peakMarginalRate": 0.37,
+    "lifetimeTax": 2528154
+  },
+  {
+    "startingAge": 60,
+    "startingBalance": 250000,
+    "peakRmdAge": 89,
+    "peakRmdAmount": 47009,
+    "peakMarginalRate": 0.22,
+    "lifetimeTax": 249348
+  },
+  {
+    "startingAge": 60,
+    "startingBalance": 500000,
+    "peakRmdAge": 89,
+    "peakRmdAmount": 94019,
+    "peakMarginalRate": 0.24,
+    "lifetimeTax": 377258
+  },
+  {
+    "startingAge": 60,
+    "startingBalance": 1000000,
+    "peakRmdAge": 89,
+    "peakRmdAmount": 188038,
+    "peakMarginalRate": 0.32,
+    "lifetimeTax": 656012
+  },
+  {
+    "startingAge": 60,
+    "startingBalance": 2000000,
+    "peakRmdAge": 89,
+    "peakRmdAmount": 376075,
+    "peakMarginalRate": 0.35,
+    "lifetimeTax": 1379940
+  },
+  {
+    "startingAge": 60,
+    "startingBalance": 4000000,
+    "peakRmdAge": 89,
+    "peakRmdAmount": 752150,
+    "peakMarginalRate": 0.37,
+    "lifetimeTax": 2975215
+  },
+  {
+    "startingAge": 65,
+    "startingBalance": 250000,
+    "peakRmdAge": 94,
+    "peakRmdAmount": 40353,
+    "peakMarginalRate": 0.22,
+    "lifetimeTax": 256676
+  },
+  {
+    "startingAge": 65,
+    "startingBalance": 500000,
+    "peakRmdAge": 94,
+    "peakRmdAmount": 80707,
+    "peakMarginalRate": 0.24,
+    "lifetimeTax": 394144
+  },
+  {
+    "startingAge": 65,
+    "startingBalance": 1000000,
+    "peakRmdAge": 94,
+    "peakRmdAmount": 161413,
+    "peakMarginalRate": 0.32,
+    "lifetimeTax": 686898
+  },
+  {
+    "startingAge": 65,
+    "startingBalance": 2000000,
+    "peakRmdAge": 94,
+    "peakRmdAmount": 322827,
+    "peakMarginalRate": 0.35,
+    "lifetimeTax": 1431644
+  },
+  {
+    "startingAge": 65,
+    "startingBalance": 4000000,
+    "peakRmdAge": 94,
+    "peakRmdAmount": 645654,
+    "peakMarginalRate": 0.37,
+    "lifetimeTax": 3143163
+  },
+  {
+    "startingAge": 70,
+    "startingBalance": 250000,
+    "peakRmdAge": 97,
+    "peakRmdAmount": 30604,
+    "peakMarginalRate": 0.22,
+    "lifetimeTax": 252209
+  },
+  {
+    "startingAge": 70,
+    "startingBalance": 500000,
+    "peakRmdAge": 97,
+    "peakRmdAmount": 61209,
+    "peakMarginalRate": 0.24,
+    "lifetimeTax": 386716
+  },
+  {
+    "startingAge": 70,
+    "startingBalance": 1000000,
+    "peakRmdAge": 97,
+    "peakRmdAmount": 122417,
+    "peakMarginalRate": 0.24,
+    "lifetimeTax": 672565
+  },
+  {
+    "startingAge": 70,
+    "startingBalance": 2000000,
+    "peakRmdAge": 97,
+    "peakRmdAmount": 244834,
+    "peakMarginalRate": 0.35,
+    "lifetimeTax": 1355023
+  },
+  {
+    "startingAge": 70,
+    "startingBalance": 4000000,
+    "peakRmdAge": 97,
+    "peakRmdAmount": 489668,
+    "peakMarginalRate": 0.35,
+    "lifetimeTax": 3015261
+  }
+]

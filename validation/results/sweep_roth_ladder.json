@@ -1,0 +1,44 @@
+[
+  {
+    "conversionAmountPerYear": 0,
+    "totalConverted": 0,
+    "baselineLifetimeTax": 997487,
+    "ladderLifetimeTax": 997487,
+    "lifetimeTaxDelta": 0
+  },
+  {
+    "conversionAmountPerYear": 25000,
+    "totalConverted": 325000,
+    "baselineLifetimeTax": 997487,
+    "ladderLifetimeTax": 901249,
+    "lifetimeTaxDelta": -96238
+  },
+  {
+    "conversionAmountPerYear": 50000,
+    "totalConverted": 650000,
+    "baselineLifetimeTax": 997487,
+    "ladderLifetimeTax": 825573,
+    "lifetimeTaxDelta": -171914
+  },
+  {
+    "conversionAmountPerYear": 75000,
+    "totalConverted": 975000,
+    "baselineLifetimeTax": 997487,
+    "ladderLifetimeTax": 767764,
+    "lifetimeTaxDelta": -229723
+  },
+  {
+    "conversionAmountPerYear": 100000,
+    "totalConverted": 1300000,
+    "baselineLifetimeTax": 997487,
+    "ladderLifetimeTax": 725444,
+    "lifetimeTaxDelta": -272043
+  },
+  {
+    "conversionAmountPerYear": 150000,
+    "totalConverted": 1950000,
+    "baselineLifetimeTax": 997487,
+    "ladderLifetimeTax": 653536,
+    "lifetimeTaxDelta": -343951
+  }
+]

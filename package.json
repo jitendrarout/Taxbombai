@@ -1,0 +1,22 @@
+{
+  "name": "taxbombai",
+  "version": "0.1.0",
+  "description": "Open-source, AI-explained retirement tax exposure (RMD 'tax bomb') analyzer.",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "license": "MIT",
+  "keywords": [
+    "rmd",
+    "retirement",
+    "tax-planning",
+    "roth-conversion",
+    "fintech",
+    "ai"
+  ],
+  "scripts": {
+    "demo": "node example/demo.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.0"
+  }
+}

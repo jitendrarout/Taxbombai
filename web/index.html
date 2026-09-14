@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TaxBombAI — see your RMD tax bomb before it goes off</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --paper:#EDEEEA;
+    --paper-raised:#F6F6F3;
+    --ink:#1C2541;
+    --ink-soft:#4A5273;
+    --brass:#B8860B;
+    --brass-dim:#D9B65C;
+    --brick:#A6402F;
+    --sage:#4C6444;
+    --hairline:#CFD1C8;
+    --radius:3px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:48px 24px 80px;}
+  header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    border-bottom:1px solid var(--hairline);
+    padding-bottom:24px;
+    margin-bottom:40px;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .wordmark{
+    font-family:'Source Serif 4',serif;
+    font-size:28px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  .wordmark span{color:var(--brick);}
+  .tagline{
+    color:var(--ink-soft);
+    font-size:14px;
+    max-width:320px;
+    text-align:right;
+  }
+  h1{
+    font-family:'Source Serif 4',serif;
+    font-weight:600;
+    font-size:38px;
+    line-height:1.15;
+    max-width:640px;
+    margin:0 0 12px;
+    letter-spacing:-0.01em;
+  }
+  .lede{
+    color:var(--ink-soft);
+    max-width:560px;
+    font-size:16px;
+    margin-bottom:40px;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:280px 1fr;
+    gap:32px;
+    margin-bottom:48px;
+  }
+  @media (max-width:760px){ .hero-grid{grid-template-columns:1fr;} }
+
+  .controls{
+    border-right:1px solid var(--hairline);
+    padding-right:28px;
+  }
+  @media (max-width:760px){ .controls{border-right:none;border-bottom:1px solid var(--hairline);padding-right:0;padding-bottom:24px;} }
+
+  .field{margin-bottom:20px;}
+  .field label{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .field label .val{
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--ink);
+    font-weight:600;
+  }
+  input[type="range"]{
+    width:100%;
+    accent-color:var(--brass);
+  }
+  select{
+    width:100%;
+    padding:6px 8px;
+    border:1px solid var(--hairline);
+    background:var(--paper-raised);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    border-radius:var(--radius);
+  }
+  .divider-label{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin:28px 0 12px;
+    padding-top:16px;
+    border-top:1px dashed var(--hairline);
+  }
+  .toggle-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:20px;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+
+  .chart-panel{
+    background:var(--paper-raised);
+    border:1px solid var(--hairline);
+    border-radius:var(--radius);
+    padding:20px;
+  }
+  .peak-readout{
+    display:flex;
+    gap:32px;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+  }
+  .stat{border-left:2px solid var(--brass);padding-left:12px;}
+  .stat.alert{border-left-color:var(--brick);}
+  .stat .num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:22px;
+    font-weight:600;
+  }
+  .stat .lbl{font-size:12px;color:var(--ink-soft);}
+  canvas{max-height:320px;}
+
+  .ledger{
+    margin-top:56px;
+  }
+  .ledger h2{
+    font-family:'Source Serif 4',serif;
+    font-size:22px;
+    font-weight:600;
+    margin-bottom:4px;
+  }
+  .ledger .sub{color:var(--ink-soft);font-size:14px;margin-bottom:16px;}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+  }
+  thead th{
+    text-align:right;
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+    color:var(--ink-soft);
+    font-size:12px;
+    border-bottom:1px solid var(--ink);
+    padding:8px 10px;
+  }
+  thead th:first-child{text-align:left;}
+  tbody td{
+    text-align:right;
+    padding:7px 10px;
+    border-bottom:1px solid var(--hairline);
+  }
+  tbody td:first-child{text-align:left;font-family:'Inter',sans-serif;}
+  tbody tr.peak-row td{background:rgba(166,64,47,0.08);font-weight:600;}
+
+  .explainer{
+    margin-top:56px;
+    background:var(--paper-raised);
+    border:1px solid var(--hairline);
+    border-radius:var(--radius);
+    padding:24px;
+  }
+  .explainer h2{
+    font-family:'Source Serif 4',serif;
+    font-size:22px;
+    margin:0 0 12px;
+  }
+  .explainer p{font-size:14px;color:var(--ink-soft);margin:0 0 12px;}
+  .explainer textarea{
+    width:100%;
+    min-height:70px;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    border:1px solid var(--hairline);
+    border-radius:var(--radius);
+    padding:10px;
+    background:var(--paper);
+    color:var(--ink);
+    resize:vertical;
+  }
+  button{
+    margin-top:12px;
+    background:var(--ink);
+    color:var(--paper);
+    border:none;
+    padding:10px 18px;
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    border-radius:var(--radius);
+    cursor:pointer;
+  }
+  button:hover{background:var(--brick);}
+  #explainOutput{
+    margin-top:16px;
+    font-size:14px;
+    white-space:pre-wrap;
+    border-top:1px dashed var(--hairline);
+    padding-top:16px;
+    display:none;
+  }
+
+  footer{
+    margin-top:64px;
+    padding-top:20px;
+    border-top:1px solid var(--hairline);
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+  footer a{color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="wordmark">Tax<span>Bomb</span>AI</div>
+    <div class="tagline">Open-source RMD projection with a plain-English explanation, not a locked spreadsheet.</div>
+  </header>
+
+  <h1>Watch your retirement tax bomb before it goes off.</h1>
+  <p class="lede">Adjust your numbers below. The chart shows projected Required Minimum Distributions and the tax they trigger, year by year — fully open math, sourced from the IRS Uniform Lifetime Table.</p>
+
+  <div class="hero-grid">
+    <div class="controls">
+      <div class="field">
+        <label>Current age <span class="val" id="v-age">62</span></label>
+        <input type="range" id="age" min="45" max="75" value="62">
+      </div>
+      <div class="field">
+        <label>Traditional balance <span class="val" id="v-bal">$1,200,000</span></label>
+        <input type="range" id="bal" min="100000" max="4000000" step="50000" value="1200000">
+      </div>
+      <div class="field">
+        <label>Assumed annual growth <span class="val" id="v-growth">6%</span></label>
+        <input type="range" id="growth" min="0" max="10" step="0.5" value="6">
+      </div>
+      <div class="field">
+        <label>Other taxable income (SS, pension) <span class="val" id="v-other">$40,000</span></label>
+        <input type="range" id="other" min="0" max="150000" step="5000" value="40000">
+      </div>
+      <div class="field">
+        <label>RMD start age</label>
+        <select id="rmdStart">
+          <option value="73">73 (born 1951–1959)</option>
+          <option value="75">75 (born 1960+)</option>
+        </select>
+      </div>
+
+      <div class="divider-label">Roth conversion ladder</div>
+      <div class="toggle-row">
+        <input type="checkbox" id="ladderOn">
+        <label for="ladderOn" style="margin:0;">Compare against a conversion ladder</label>
+      </div>
+      <div id="ladderFields" style="display:none;">
+        <div class="field">
+          <label>Convert per year <span class="val" id="v-conv">$80,000</span></label>
+          <input type="range" id="conv" min="0" max="200000" step="5000" value="80000">
+        </div>
+        <div class="field">
+          <label>Conversion window <span class="val" id="v-window">62–72</span></label>
+          <input type="range" id="convStart" min="45" max="80" value="62">
+          <input type="range" id="convEnd" min="45" max="80" value="72">
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-panel">
+      <div class="peak-readout">
+        <div class="stat alert">
+          <div class="num" id="peakRmd">—</div>
+          <div class="lbl">peak annual RMD, age <span id="peakAge">—</span></div>
+        </div>
+        <div class="stat">
+          <div class="num" id="peakRate">—</div>
+          <div class="lbl">marginal rate in peak year</div>
+        </div>
+        <div class="stat" id="deltaStat" style="display:none;">
+          <div class="num" id="deltaVal">—</div>
+          <div class="lbl">lifetime tax delta vs. baseline</div>
+        </div>
+      </div>
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
+
+  <div class="ledger">
+    <h2>Year-by-year ledger</h2>
+    <div class="sub">First 12 projected years. Full projection available via the open-source library.</div>
+    <table>
+      <thead>
+        <tr><th>Age</th><th>Balance</th><th>RMD</th><th>Taxable income</th><th>Est. tax</th><th>Marginal rate</th></tr>
+      </thead>
+      <tbody id="ledgerBody"></tbody>
+    </table>
+  </div>
+
+  <div class="explainer">
+    <h2>What this means</h2>
+    <p id="quickSummary" style="font-size:15px;color:var(--ink);line-height:1.6;"></p>
+
+    <div style="margin-top:24px;padding-top:20px;border-top:1px dashed var(--hairline);">
+      <h2 style="font-size:18px;">Want a deeper, AI-narrated explanation?</h2>
+      <p>The summary above is generated with no AI at all — it's plain JavaScript templating over the numbers, so it's always available. For a more nuanced, conversational explanation of your specific situation, this optionally calls the same <code>explainProjection()</code> function from the open-source library, which narrates the numbers above without inventing new ones. Paste your own Anthropic API key to try it (never sent anywhere but directly to Anthropic's API from your browser).</p>
+      <textarea id="apiKey" placeholder="sk-ant-... (optional — only needed for the deeper AI explanation)"></textarea>
+      <br>
+      <button id="explainBtn">Get a deeper AI explanation</button>
+      <div id="explainOutput"></div>
+    </div>
+  </div>
+
+  <footer>
+    TaxBombAI is an educational projection tool, not tax or financial advice. RMD divisors sourced from IRS Publication 590-B, Table III. Verify current-year tax brackets before relying on this for real decisions. Full methodology and source code: <a href="https://github.com/jitendrarout/taxbombai" target="_blank">github.com/jitendrarout/taxbombai</a>
+  </footer>
+
+</div>
+
+<script>
+// ---- RMD table (mirrors src/rmdTable.js) ----
+const UNIFORM_LIFETIME_TABLE = {72:27.4,73:26.5,74:25.5,75:24.6,76:23.7,77:22.9,78:22.0,79:21.1,80:20.2,81:19.4,82:18.5,83:17.7,84:16.8,85:16.0,86:15.2,87:14.4,88:13.7,89:12.9,90:12.2,91:11.5,92:10.8,93:10.1,94:9.5,95:8.9,96:8.4,97:7.8,98:7.3,99:6.8,100:6.4,101:6.0,102:5.6,103:5.2,104:4.9,105:4.6,106:4.3,107:4.1,108:3.9,109:3.7,110:3.5};
+function getDivisor(age){ const a=Math.min(age,110); return UNIFORM_LIFETIME_TABLE[a] ?? UNIFORM_LIFETIME_TABLE[110]; }
+
+const BRACKETS = [
+  {upTo:11600,rate:.10},{upTo:47150,rate:.12},{upTo:100525,rate:.22},
+  {upTo:191950,rate:.24},{upTo:243725,rate:.32},{upTo:609350,rate:.35},{upTo:Infinity,rate:.37}
+];
+function estimateTax(income){
+  let tax=0,last=0,rate=BRACKETS[0].rate;
+  for(const b of BRACKETS){
+    if(income>last){ tax += (Math.min(income,b.upTo)-last)*b.rate; rate=b.rate; }
+    last=b.upTo;
+    if(income<=b.upTo) break;
+  }
+  return {tax:Math.round(tax), rate};
+}
+
+function projectSchedule({currentAge,balance,growth,rmdStart,other,years=25}){
+  let bal=balance, out=[];
+  for(let i=0;i<years;i++){
+    const age=currentAge+i;
+    bal = bal*(1+growth);
+    let rmd=0;
+    if(age>=rmdStart){ const d=getDivisor(age); rmd = d? bal/d : 0; bal-=rmd; }
+    const taxable = other+rmd;
+    const {tax,rate}=estimateTax(taxable);
+    out.push({age, rmd:Math.round(rmd), balance:Math.round(Math.max(bal,0)), taxable:Math.round(taxable), tax, rate});
+    if(bal<=0) break;
+  }
+  return out;
+}
+
+function projectLadder({currentAge,balance,growth,rmdStart,other,convAmt,convStart,convEnd,years=25}){
+  let trad=balance, roth=0, out=[], baselineTax=0, ladderTax=0;
+  const baseline = projectSchedule({currentAge,balance,growth,rmdStart,other,years});
+  baselineTax = baseline.reduce((s,y)=>s+y.tax,0);
+
+  for(let i=0;i<years;i++){
+    const age=currentAge+i;
+    trad = trad*(1+growth); roth = roth*(1+growth);
+    let conv=0;
+    if(age>=convStart && age<=convEnd && convAmt>0){ conv=Math.min(convAmt,trad); trad-=conv; roth+=conv; }
+    let rmd=0;
+    if(age>=rmdStart){ const d=getDivisor(age); rmd = d? trad/d : 0; trad-=rmd; }
+    const taxable = other+rmd+conv;
+    const {tax,rate}=estimateTax(taxable);
+    ladderTax += tax;
+    out.push({age, rmd:Math.round(rmd), conv:Math.round(conv), taxable:Math.round(taxable), tax, rate});
+    if(trad<=0 && roth<=0) break;
+  }
+  return {baseline, ladder:out, delta: Math.round(ladderTax-baselineTax)};
+}
+
+const fmt = n => '$'+Math.round(n).toLocaleString();
+let chart;
+
+function generateQuickSummary(currentAge, rmdStart, peak, ladderOn, ladderDelta){
+  const yearsUntilRmd = Math.max(0, rmdStart - currentAge);
+  let text = '';
+
+  if(yearsUntilRmd > 0){
+    text += `Based on these numbers, your RMDs begin in ${yearsUntilRmd} year${yearsUntilRmd===1?'':'s'}, at age ${rmdStart}. `;
+  } else {
+    text += `Based on these numbers, you're already past the RMD start age of ${rmdStart}. `;
+  }
+
+  text += `The single largest distribution in this projection lands at age ${peak.age}, at ${fmt(peak.rmd)} for that year, `;
+  text += `pushing your taxable income into an estimated ${Math.round(peak.rate*100)}% marginal bracket. `;
+
+  if(ladderOn && ladderDelta !== null){
+    if(ladderDelta < 0){
+      text += `With the Roth conversion ladder you've configured, this projection shows roughly ${fmt(Math.abs(ladderDelta))} in total lifetime tax savings compared to doing nothing — `;
+      text += `converting earlier, in lower-income years, generally fills cheaper tax brackets before RMDs would otherwise push you into higher ones.`;
+    } else if(ladderDelta > 0){
+      text += `With the Roth conversion ladder you've configured, this projection actually shows about ${fmt(ladderDelta)} more in total lifetime tax paid than doing nothing — `;
+      text += `the conversions here are pulling tax forward faster than they're avoiding it. Try lowering the conversion amount or narrowing the window.`;
+    } else {
+      text += `With the Roth conversion ladder you've configured, total lifetime tax comes out roughly the same as doing nothing — try adjusting the amount or window to see if that changes.`;
+    }
+  } else {
+    text += `Turn on the Roth conversion ladder comparison above to see whether converting some of this balance earlier could reduce the total tax you'll pay over time.`;
+  }
+
+  return text;
+}
+
+function render(){
+  const currentAge = +document.getElementById('age').value;
+  const balance = +document.getElementById('bal').value;
+  const growth = +document.getElementById('growth').value/100;
+  const other = +document.getElementById('other').value;
+  const rmdStart = +document.getElementById('rmdStart').value;
+  const ladderOn = document.getElementById('ladderOn').checked;
+
+  document.getElementById('v-age').textContent = currentAge;
+  document.getElementById('v-bal').textContent = fmt(balance);
+  document.getElementById('v-growth').textContent = growth*100+'%';
+  document.getElementById('v-other').textContent = fmt(other);
+
+  const schedule = projectSchedule({currentAge,balance,growth,rmdStart,other});
+  const peak = schedule.reduce((m,y)=> y.rmd>m.rmd?y:m, schedule[0]);
+  document.getElementById('peakRmd').textContent = fmt(peak.rmd);
+  document.getElementById('peakAge').textContent = peak.age;
+  document.getElementById('peakRate').textContent = Math.round(peak.rate*100)+'%';
+
+  let datasets = [{
+    label:'Projected RMD',
+    data: schedule.map(y=>y.rmd),
+    borderColor:'#B8860B',
+    backgroundColor:'rgba(184,134,11,0.18)',
+    fill:true,
+    tension:0.25,
+    pointRadius:0,
+  }];
+
+  document.getElementById('deltaStat').style.display='none';
+  if(ladderOn){
+    const convAmt = +document.getElementById('conv').value;
+    const convStart = +document.getElementById('convStart').value;
+    const convEnd = +document.getElementById('convEnd').value;
+    document.getElementById('v-conv').textContent = fmt(convAmt);
+    document.getElementById('v-window').textContent = convStart+'–'+convEnd;
+    const result = projectLadder({currentAge,balance,growth,rmdStart,other,convAmt,convStart,convEnd});
+    datasets.push({
+      label:'RMD with conversion ladder',
+      data: result.ladder.map(y=>y.rmd),
+      borderColor:'#4C6444',
+      backgroundColor:'rgba(76,100,68,0.12)',
+      fill:true,
+      tension:0.25,
+      pointRadius:0,
+    });
+    document.getElementById('deltaStat').style.display='block';
+    document.getElementById('deltaVal').textContent = (result.delta>=0?'+':'')+fmt(result.delta);
+    var ladderDelta = result.delta;
+  }
+
+  document.getElementById('quickSummary').textContent =
+    generateQuickSummary(currentAge, rmdStart, peak, ladderOn, typeof ladderDelta !== 'undefined' ? ladderDelta : null);
+
+  const labels = schedule.map(y=>y.age);
+  if(chart){ chart.data.labels=labels; chart.data.datasets=datasets; chart.update(); }
+  else {
+    chart = new Chart(document.getElementById('chart'), {
+      type:'line',
+      data:{labels, datasets},
+      options:{
+        responsive:true,
+        plugins:{ legend:{ labels:{ font:{family:'Inter'} } } },
+        scales:{
+          x:{ title:{display:true,text:'Age',font:{family:'Inter'}}, grid:{color:'#CFD1C8'} },
+          y:{ title:{display:true,text:'Annual RMD ($)',font:{family:'Inter'}}, grid:{color:'#CFD1C8'} }
+        }
+      }
+    });
+  }
+
+  const body = document.getElementById('ledgerBody');
+  body.innerHTML = schedule.slice(0,12).map(y=>
+    `<tr class="${y.age===peak.age?'peak-row':''}">
+      <td>${y.age}</td><td>${fmt(y.balance)}</td><td>${fmt(y.rmd)}</td>
+      <td>${fmt(y.taxable)}</td><td>${fmt(y.tax)}</td><td>${Math.round(y.rate*100)}%</td>
+    </tr>`).join('');
+}
+
+['age','bal','growth','other','rmdStart','conv','convStart','convEnd'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', render);
+});
+document.getElementById('ladderOn').addEventListener('change', (e)=>{
+  document.getElementById('ladderFields').style.display = e.target.checked ? 'block':'none';
+  render();
+});
+
+document.getElementById('explainBtn').addEventListener('click', async ()=>{
+  const key = document.getElementById('apiKey').value.trim();
+  const out = document.getElementById('explainOutput');
+  if(!key){ out.style.display='block'; out.textContent='Paste an Anthropic API key above to try the live AI explanation. Everything else on this page runs entirely client-side with no key needed.'; return; }
+  out.style.display='block';
+  out.textContent='Thinking...';
+  const currentAge = +document.getElementById('age').value;
+  const balance = +document.getElementById('bal').value;
+  const growth = +document.getElementById('growth').value/100;
+  const other = +document.getElementById('other').value;
+  const rmdStart = +document.getElementById('rmdStart').value;
+  const schedule = projectSchedule({currentAge,balance,growth,rmdStart,other});
+  const peak = schedule.reduce((m,y)=> y.rmd>m.rmd?y:m, schedule[0]);
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:500,
+        system:'You are a retirement tax-planning explainer. You are given already-computed numbers. Do not invent or recompute figures. Explain the tax bomb in plain English and what levers reduce it. End with: This is an educational projection, not tax advice — consult a licensed tax professional before acting.',
+        messages:[{role:'user', content: JSON.stringify({peak, firstFiveYears: schedule.slice(0,5)})}]
+      })
+    });
+    const data = await res.json();
+    out.textContent = data.content?.map(b=>b.text).join('\n') || JSON.stringify(data);
+  }catch(err){
+    out.textContent = 'Could not reach the API from the browser directly — this works best run through the Node library (see explainer.js) rather than client-side. Error: '+err.message;
+  }
+});
+
+document.getElementById('convStart').addEventListener('input', e=>{
+  if(+e.target.value > +document.getElementById('convEnd').value) document.getElementById('convEnd').value = e.target.value;
+  render();
+});
+document.getElementById('convEnd').addEventListener('input', e=>{
+  if(+e.target.value < +document.getElementById('convStart').value) document.getElementById('convStart').value = e.target.value;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
